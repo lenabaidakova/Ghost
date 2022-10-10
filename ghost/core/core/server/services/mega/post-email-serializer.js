@@ -20,7 +20,7 @@ const memberAttribution = require('../member-attribution');
 const ALLOWED_REPLACEMENTS = ['first_name', 'uuid'];
 
 const PostEmailSerializer = {
-    
+
     // Format a full html document ready for email by inlining CSS, adjusting links,
     // and performing any client-specific fixes
     formatHtmlForEmail(html) {
@@ -208,6 +208,7 @@ const PostEmailSerializer = {
             showBadge: newsletter.get('show_badge'),
             footerContent: newsletter.get('footer_content'),
             showHeaderName: newsletter.get('show_header_name'),
+            feedbackEnabled: newsletter.get('feedback_enabled'),
             accentColor,
             adjustedAccentColor,
             adjustedAccentContrastColor
@@ -335,7 +336,7 @@ const PostEmailSerializer = {
             plaintext: post.plaintext
         };
 
-        /** 
+        /**
          *  If a part of the email is members-only and the post is paid-only, add a paywall:
          *  - Just before sending the email, we'll hide the paywall or paid content depending on the member segment it is sent to.
          *  - We already need to do URL-replacement on the HTML here
@@ -369,7 +370,7 @@ const PostEmailSerializer = {
 
                 // Add link click tracking
                 url = await linkTracking.service.addTrackingToUrl(url, post, '--uuid--');
-                
+
                 // We need to convert to a string at this point, because we need invalid string characters in the URL
                 const str = url.toString().replace(/--uuid--/g, '%%{uuid}%%');
                 return str;
@@ -490,7 +491,7 @@ const PostEmailSerializer = {
         });
 
         result.html = this.formatHtmlForEmail($.html());
-        result.plaintext = htmlToPlaintext.email(result.html); 
+        result.plaintext = htmlToPlaintext.email(result.html);
         delete result.post;
 
         return result;
