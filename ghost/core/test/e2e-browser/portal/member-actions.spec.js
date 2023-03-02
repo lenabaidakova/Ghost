@@ -104,7 +104,7 @@ test.describe('Portal', () => {
 
             // all newsletters should be activated
             for (let i = 0; i < count; i++) {
-                expect(await newsletters.nth(i).locator('input[type="checkbox"]').isChecked()).toBeTruthy();
+                await expect(await newsletters.nth(i).locator('input[type="checkbox"]').isChecked()).toBeTruthy();
             }
 
             // unsubscribe from all emails
@@ -112,8 +112,9 @@ test.describe('Portal', () => {
 
             // all newsletters should be disabled
             for (let i = 0; i < count; i++) {
-                expect(await newsletters.nth(i).locator('input[type="checkbox"]').isChecked()).not.toBeTruthy();
+                await expect(await newsletters.nth(i).locator('input[type="checkbox"]').isChecked()).not.toBeTruthy();
             }
+            await page.waitForLoadState('networkidle');
 
             // check that member's newsletters was updated in Admin
             await page.goto(memberUrl);

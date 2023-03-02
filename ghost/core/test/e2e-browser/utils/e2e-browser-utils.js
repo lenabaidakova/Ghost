@@ -165,11 +165,11 @@ const archiveAllTiers = async (page) => {
 
     // Archive if already exists
     while (await page.locator('.gh-tier-card').first().isVisible()) {
-        const tierCard = page.locator('.gh-tier-card').first();
+        const tierCard = await page.locator('.gh-tier-card').first();
         await tierCard.locator('.gh-tier-card-actions-button').click();
         await tierCard.getByRole('button', {name: 'Archive'}).click();
         await page.locator('.modal-content').getByRole('button', {name: 'Archive'}).click();
-        await page.locator('.modal-content').waitFor({state: 'detached', timeout: 1000});
+        await page.waitForLoadState('networkidle');
     }
 };
 
@@ -224,7 +224,7 @@ const createTier = async (page, {name, monthlyPrice, yearlyPrice, trialDays}, en
     }
     // Add the tier
     await page.locator('.gh-btn-add-tier').click();
-    const modal = page.locator('.modal-content');
+    const modal = await page.locator('.modal-content');
     await modal.locator('input#name').first().fill(name);
     await modal.locator('#monthlyPrice').fill(`${monthlyPrice}`);
     await modal.locator('#yearlyPrice').fill(`${yearlyPrice}`);
@@ -355,7 +355,11 @@ const completeStripeSubscription = async (page) => {
     await fillInputIfExists(page, '#billingAddressLine2', 'Apt 1');
     await fillInputIfExists(page, '#billingLocality', 'Testville');
 
+    const navigationPromise = page.waitForURL('http://127.0.0.1:2369/');
     await page.getByTestId('hosted-payment-submit-button').click();
+    await navigationPromise;
+
+    await page.waitForLoadState('networkidle');
 };
 
 /**
